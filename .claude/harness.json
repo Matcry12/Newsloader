@@ -1,0 +1,24 @@
+{
+  "version": 2,
+  "root_allow": [
+    "README.md",
+    "CLAUDE.md",
+    "pyproject.toml",
+    "requirements.txt",
+    "package.json",
+    ".gitignore",
+    ".env.example",
+    "LICENSE",
+    "Makefile",
+    "uv.lock",
+    "package-lock.json",
+    "Dockerfile"
+  ],
+  "max_file_mb": 10,
+  "venv_guard": false,
+  "lint": false,
+  "protected_branches": [
+    "main",
+    "master"
+  ]
+}
