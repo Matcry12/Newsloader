@@ -11,7 +11,7 @@
 | src/newsloader/ | package: sources, rank, llm, store, telegram |
 | tests/ | pytest |
 | evals/ | frozen fixture, labels, baseline.json |
-| config/ | interests.yaml, settings |
+| config/ | users/<name>.yaml (per-user profiles), settings |
 | docs/ | decisions.md (design decisions D1–D14) |
 | .github/workflows/ | CI + deploy |
 

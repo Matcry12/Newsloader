@@ -8,24 +8,29 @@ v1 source: arXiv only. Sources pluggable (HN, GitHub trending, blogs later).
 
 ## D2. Ranking pipeline
 - **Stage 0 ($0):** arXiv API (`export.arxiv.org/api/query`, 1 req/3s), RSS as fallback (can be empty; none on weekends).
-  Keep: category in whitelist, `v1` only, dedupe by ID (cross-lists), keyword blocklist.
+  Fetch scope = union of all users' categories. Code keeps only universal rules: dedupe by ID (cross-lists), `v1` only.
+  No keyword/content rules: keyword search misses relevant docs (Blair & Maron 1985, CACM: ~20% recall; Furnas et al. 1987,
+  CACM: two people pick the same term <20% of the time). Relevance goes to embeddings, as in two-stage recommenders
+  (Covington et al. 2016, RecSys) and paper recommenders (Scholar Inbox, arXiv:2504.08385; arxiv-sanity-lite). Recall cost measured by D10.
+- **Embed once, score per user:** each paper is embedded once and shared; per-user scoring is a cheap cosine.
 - **Stage 1 (embeddings):** embed title+abstract, cache by ID. Score = max cosine over interest vectors, minus 👎 penalty. Keep top K=30–50 (recall matters here).
 - **Stage 2 (LLM rerank):** one batched call, short IDs + title + abstract cut to ~120 tok, JSON `{id, score, reason}`. Cheap model, cached static prefix.
 - **Stage 3:** summaries for top 5–7 only, output capped.
 - Measure during development: recall@K (stage 1) and precision@5 (stage 2) on labeled 👍/👎.
 
-## D3. Interest profile
-`interests.yaml`: per topic, a name, a pseudo-abstract in paper vocabulary (HyDE-style; LLM drafts it, user edits), and optional seed arXiv IDs.
+## D3. Interest profile (per user, multi-user)
+Each user owns a profile: categories, topics, optional blocked words. Nothing user-specific in code.
+v1 storage: `config/users/<name>.yaml` (later a DB table, editable via Telegram). Per topic: a name, a pseudo-abstract in paper vocabulary (HyDE-style; LLM drafts it, user edits), and optional seed arXiv IDs.
 One-time LLM expansion into 5–10 technique phrasings per topic. Telegram 👍/👎 adds to it over time.
 
-Topics:
+Example profile (first user) — topics:
 1. LLM agents & tool use (function calling, MCP, coding agents)
 2. RAG & retrieval techniques
 3. Model releases / tech reports (DeepSeek, Qwen, Llama, Claude…)
 4. LLM engineering in production (eval, serving, inference cost)
 5. OCR / document understanding
 
-Categories: cs.CL, cs.AI, cs.LG, cs.IR, cs.CV (cs.CV only if it passes an OCR/document keyword gate, since it's high volume).
+Categories: cs.CL, cs.AI, cs.LG, cs.IR, cs.CV (no keyword gate; embeddings handle cs.CV volume).
 
 ## D4. Deployment
 Google Cloud Run (one container: Telegram webhook + `/run-digest` endpoint) and Cloud Scheduler for the daily cron. Both fit the free tier.
@@ -65,13 +70,13 @@ Every digest has a footer: `💰 run $X · month $Y/$1`.
 
 ## D12. Delivery (defaults, change later)
 08:00 Asia/Ho_Chi_Minh, Mon–Fri (matches arXiv's announcement schedule). Top 5 papers; on a slow day (<3 above threshold) send only those, plus a "quiet day" note.
-Private chat only (chat-ID allowlist). Commands: `/today`, `/topics`.
+Multi-user: each chat ID maps to a profile (D3); allowlist of chat IDs for now. Commands: `/today`, `/topics`.
 
 ## D13. Secrets
 Local: `.env` (gitignored). Cloud: GCP Secret Manager, mounted into Cloud Run as env vars. Secrets: Telegram token, DeepSeek, Voyage, Neon, Langfuse keys.
 
 ## D14. Build order (vertical slices, each one runnable)
-1. `git init`, then `uv run newsloader digest`: arXiv fetch → stage 0 → keyword rank → top 5 sent to Telegram (local).
+1. Build each stage alone on `tests/fixtures/arxiv_sample.json`, review, then connect: stage 0 ✅ → fetch → keyword rank → Telegram (local).
 2. Neon + pgvector + Voyage embeddings: stage 1 with `interests.yaml`.
 3. DeepSeek rerank + summaries (stages 2–3).
 4. Langfuse tracing + cost log + digest footer.
