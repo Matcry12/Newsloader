@@ -1,7 +1,7 @@
 # Newsloader — daily personalized arXiv digest to Telegram (CV project: deployment, CI eval, tracing, cost control)
 
 ## Stack & commands
-- run: `uv run newsloader digest`
+- run: `uv run --env-file .env newsloader digest` (add `--limit 3 --dry-run` to test)
 - test: `uv run pytest`
 - lint: `uv run ruff check --fix && uv run ruff format`
 

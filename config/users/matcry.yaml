@@ -1,4 +1,5 @@
 name: matcry
+chat_env: TELEGRAM_CHAT_ID
 categories: [cs.CL, cs.AI, cs.LG, cs.IR, cs.CV]
 blocked_words: []
 topics:

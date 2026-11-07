@@ -110,14 +110,7 @@ def score_papers(
             name: cosine(cache[paper["id"]], vec) for name, vec in topic_vecs.items()
         }
         topic = max(scores, key=scores.get)
-        results.append(
-            {
-                "id": paper["id"],
-                "title": paper["title"],
-                "score": scores[topic],
-                "topic": topic,
-            }
-        )
+        results.append({**paper, "score": scores[topic], "topic": topic})
     return sorted(results, key=lambda result: result["score"], reverse=True)
 
 
