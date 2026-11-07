@@ -7,13 +7,13 @@ Personalized digest: fetch → rank against interest profile → send top 5–7 
 v1 source: arXiv only. Sources pluggable (HN, GitHub trending, blogs later).
 
 ## D2. Ranking pipeline
-- **Stage 0 ($0):** arXiv API (`export.arxiv.org/api/query`, 1 req/3s), RSS as fallback (can be empty; none on weekends).
+- **Filter ($0):** arXiv API (`export.arxiv.org/api/query`, 1 req/3s), RSS as fallback (can be empty; none on weekends).
   Fetch scope = union of all users' categories. Code keeps only universal rules: dedupe by ID (cross-lists), `v1` only.
   No keyword/content rules: keyword search misses relevant docs (Blair & Maron 1985, CACM: ~20% recall; Furnas et al. 1987,
   CACM: two people pick the same term <20% of the time). Relevance goes to embeddings, as in two-stage recommenders
   (Covington et al. 2016, RecSys) and paper recommenders (Scholar Inbox, arXiv:2504.08385; arxiv-sanity-lite). Recall cost measured by D10.
 - **Embed once, score per user:** each paper is embedded once and shared; per-user scoring is a cheap cosine.
-- **Stage 1 (embeddings):** embed title+abstract, cache by ID. Score = max cosine over interest vectors, minus 👎 penalty. Keep the top 5.
+- **Rank (embeddings):** embed title+abstract, cache by ID. Score = max cosine over interest vectors, minus 👎 penalty (penalty planned, not built). Keep the top 5.
 - **Summaries:** DeepSeek writes a question hook and a one-line answer for the top 5 only, output capped.
 - **No rerank in the baseline.** A rerank model only returns scores, so an LLM is needed for the text anyway. Add one (Vertex `semantic-ranker` or DeepSeek) only if the eval shows it clearly beats no rerank.
 - Measure during development: precision@5 on labeled 👍/👎.
@@ -78,9 +78,9 @@ Multi-user: each chat ID maps to a profile (D3); allowlist of chat IDs for now. 
 Local: `.env` (gitignored). Cloud: GCP Secret Manager, mounted into Cloud Run as env vars. Secrets: Telegram token, DeepSeek, Gemini, Neon, Langfuse keys.
 
 ## D14. Build order (vertical slices, each one runnable)
-1. Build each stage alone on `tests/fixtures/arxiv_sample.json`, review, then connect: stage 0 ✅ → fetch → keyword rank → Telegram (local).
-2. Gemini embeddings: stage 1 with `config/users/<name>.yaml`, then Neon + pgvector.
-3. DeepSeek summaries for the top 5.
+1. ✅ Build each stage alone on `tests/fixtures/arxiv_sample.json`, review, then connect: filter → fetch → Telegram (local). Keyword rank was dropped (D2).
+2. Gemini embeddings: rank with `config/users/<name>.yaml` ✅ (embedding cache is a JSON file in `.cache/`); Neon + pgvector not done.
+3. ✅ DeepSeek summaries for the top 5. `newsloader digest` joins steps 1 to 3 (file-based state).
 4. Langfuse tracing + cost log + digest footer.
 5. Docker → Cloud Run + Cloud Scheduler + GitHub Actions deploy.
 6. Telegram webhook: 👍/👎, `/today`, `/topics`.
