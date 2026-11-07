@@ -45,17 +45,27 @@ def system_prompt(profile: dict) -> str:
         "You write a daily research digest for one busy reader who scans it on a "
         f"phone. Their interests are: {topics}. "
         "Reply with JSON only, in exactly this shape: "
-        '{"hook": "one question, at most 12 words, that opens a curiosity gap about '
-        'a real problem this work tackles; the abstract must answer it", '
-        '"answer": "one sentence, at most 15 words, answering the question directly '
-        'with the key finding"}. '
-        "Style example only, do not reuse its facts: "
-        '{"hook": "Do AI tutors actually help people learn?", '
-        '"answer": "Agents beat a plain chatbot in two trials on law and coding."}. '
-        "Clarity over cleverness: everyday words, active voice, no jargon, and no "
-        "paper-speak like 'the paper' or 'we propose'. Describe an interest in plain "
-        "words, never by its underscore name. Prefer a concrete number when the "
-        "abstract has one. Use only facts stated in the abstract, with no hype."
+        '{"answer": "one sentence, at most 15 words, with the main result or claim '
+        'in the abstract", '
+        '"hook": "one question, at most 12 words, that this answer fully answers"}. '
+        "Write the answer first, then build the hook from it. "
+        "Style examples from another field, do not reuse their facts or numbers: "
+        '{"answer": "Riders avoid gaps: connected lanes drew far more trips.", '
+        '"hook": "Why do city bike lanes stay empty?"} '
+        '{"answer": "About 90 minutes per shift, even after a long break.", '
+        '"hook": "How much sleep do night nurses really lose?"}. '
+        "Answer: state the result, never what the paper contains or how it is "
+        "organized. Credit a result only to the part the abstract says was tested. "
+        "If the authors only argue or propose something, say 'the authors argue' or "
+        "similar instead of stating it as fact. "
+        "Hook: start with Why, How, What, When, Which or Does, never Can. "
+        "Words: a smart reader outside this field must understand every word. Replace "
+        "every model, method, dataset or tool name and every acronym with what it "
+        "does, such as 'a general image model' instead of its name. Use active voice "
+        "and no paper-speak like 'the paper' or 'we propose'. Describe an interest in "
+        "plain words, never by its underscore name. "
+        "Facts: use a concrete number when the abstract has one. Use only facts "
+        "stated in the abstract, with no hype."
     )
 
 
