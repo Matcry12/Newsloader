@@ -7,7 +7,10 @@ authors = [
     { name = "Matcry", email = "fdtywadw@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "httpx>=0.28.1",
+    "pyyaml>=6.0.3",
+]
 
 [project.scripts]
 newsloader = "newsloader:main"

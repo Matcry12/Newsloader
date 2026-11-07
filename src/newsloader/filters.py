@@ -1,4 +1,4 @@
-"""Stage 0: universal structural filter. Relevance is per user and lives in stage 1 (see docs/decisions.md D2)."""
+"""Universal structural filter (stage 0). Relevance is per user and lives in stage 1 (see docs/decisions.md D2)."""
 
 import json
 import sys

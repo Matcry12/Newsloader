@@ -1,0 +1,79 @@
+name: matcry
+categories: [cs.CL, cs.AI, cs.LG, cs.IR, cs.CV]
+blocked_words: []
+topics:
+  - name: llm_agents_tool_use
+    pseudo_abstract: >
+      We propose a framework for LLM agents that interleave reasoning with tool use,
+      where a policy model generates structured function-calling traces and executes
+      multi-step plans against external APIs, Model Context Protocol (MCP) servers, and
+      code interpreters. We show that tool-augmented agents outperform chain-of-thought
+      baselines on tasks requiring retrieval, execution, and self-correction, and we
+      introduce a benchmark of long-horizon agentic episodes measuring task success,
+      tool-call accuracy, and recovery from execution errors. Our method combines
+      supervised fine-tuning on synthesized trajectories with reinforcement learning
+      from execution feedback, and we analyze failure modes in coding agents including
+      incorrect API arguments, premature termination, and plan drift. Ablations over
+      planner design, tool schema representation, and context management show that
+      explicit state tracking and hierarchical planning are critical for robust
+      multi-step tool execution.
+  - name: rag_retrieval
+    pseudo_abstract: >
+      We present a retrieval-augmented generation pipeline that combines dense
+      bi-encoder retrieval with sparse BM25 and hybrid fusion, followed by a
+      cross-encoder reranker over the top-k candidates. We study chunking strategies,
+      sentence-window segmentation, and context packing, and propose a query rewriting
+      module that decomposes multi-hop questions and expands ambiguous queries. We
+      compare retrieval augmentation against long-context prompting under matched
+      token budgets and show that retrieval improves factuality and reduces
+      hallucination on knowledge-intensive benchmarks while lowering inference cost.
+      Our evaluation uses recall@k, nDCG, and answer-level metrics with human and
+      LLM-judge annotations, and we release a diagnostic benchmark for retrieval
+      quality, including failure analysis of embedding models, domain shift, and
+      multilingual corpora, demonstrating consistent gains from reranking and
+      adaptive retrieval depth.
+  - name: model_releases
+    pseudo_abstract: >
+      We introduce a family of large language models with a mixture-of-experts
+      architecture, trained on a curated multi-trillion-token corpus of web text,
+      code, and multilingual data. We describe pretraining infrastructure, data
+      filtering and deduplication, tokenizer design, and architectural choices
+      including grouped-query attention, sliding-window attention, and
+      rotary position embeddings. Post-training includes supervised fine-tuning on
+      instruction data, preference optimization, and reinforcement learning with
+      verifiable rewards for reasoning and code. We report results on MMLU,
+      GPQA, MATH, HumanEval, and long-context benchmarks against contemporary
+      open-weight and proprietary models, and analyze scaling behavior, compute
+      budget, and inference cost. We further discuss safety evaluation, refusal
+      behavior, contamination checks, and deployment considerations, and release
+      model weights and a technical report detailing training recipes and
+      benchmark comparisons.
+  - name: llm_production
+    pseudo_abstract: >
+      We present an evaluation and serving stack for deploying large language models
+      in production. We study LLM-as-judge protocols including pairwise comparison,
+      rubric-based scoring, position bias, and agreement with human annotators, and
+      propose regression suites for prompt and model changes. On the systems side, we
+      analyze inference efficiency through continuous batching, paged KV cache,
+      speculative decoding, and quantization to INT8 and FP4, reporting throughput,
+      time-to-first-token, and cost-per-request tradeoffs. We show how prefix caching,
+      routing between model tiers, and context compression reduce latency and expense
+      under realistic traffic. We additionally describe guardrails for prompt
+      injection and unsafe output, observability with tracing and token accounting,
+      and online A/B testing, demonstrating that combined systems and evaluation
+      optimizations cut serving cost while preserving task quality.
+  - name: ocr_document_ai
+    pseudo_abstract: >
+      We propose a document understanding system that performs text recognition,
+      layout analysis, and structured extraction from scanned documents, forms,
+      tables, and charts. Our approach combines a vision encoder with a document
+      vision-language model that generates markdown, reading order, and key-value
+      pairs, trained on synthetic and real document corpora with OCR supervision.
+      We show improvements on text spotting and handwriting recognition benchmarks,
+      and introduce a table structure recognition module that recovers cell
+      boundaries, spanning headers, and chart data series. Experiments on scanned
+      invoices, scientific PDFs, and historical archives evaluate character error
+      rate, TEDS, and field-level accuracy, and we analyze robustness to skew,
+      low resolution, stamp occlusion, and multilingual scripts. Ablations compare
+      end-to-end document VLMs against cascaded OCR pipelines and show gains in
+      extraction accuracy and throughput.

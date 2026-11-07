@@ -1,8 +1,8 @@
-from newsloader.stage0 import drop_reason, filter_papers
+from newsloader.filters import drop_reason, filter_papers
 
 
 def make_paper(**overrides) -> dict:
-    """Return a valid v1 paper that stage 0 keeps."""
+    """Return a valid v1 paper that the filter keeps."""
     paper = {
         "id": "2601.00001",
         "version": "v1",
