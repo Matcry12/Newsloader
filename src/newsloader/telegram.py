@@ -14,11 +14,11 @@ LIMIT = 4096
 def format_paper(number: int, paper: dict) -> str:
     """Format one paper as an HTML block."""
     title = html.escape(paper["title"])
-    summary = html.escape(paper["summary"])
+    hook = html.escape(paper["hook"])
     url = html.escape(paper["url"], quote=True)
-    lines = [f'{number}. <a href="{url}">{title}</a>', summary]
-    if paper["why"]:
-        lines.append(f"💡 {html.escape(paper['why'])}")
+    lines = [f'{number}. <a href="{url}">{title}</a>', hook]
+    if paper["answer"]:
+        lines.append(f"💡 {html.escape(paper['answer'])}")
     return "\n".join(lines)
 
 
@@ -26,7 +26,7 @@ def build_messages(papers: list[dict]) -> list[str]:
     """Join formatted papers into messages that each stay under LIMIT."""
     if not papers:
         return ["Quiet day: no papers today."]
-    # ponytail: a block is under ~1.5k chars (summary capped by MAX_TOKENS), so one block never hits LIMIT
+    # ponytail: a block is under ~1.5k chars (hook capped by MAX_TOKENS), so one block never hits LIMIT
     messages = []
     message = ""
     for number, paper in enumerate(papers, start=1):
@@ -66,7 +66,7 @@ def main(
     """Build messages from the first `limit` fixture papers, then print or send them."""
     with open(fixture_path) as file:
         papers = [
-            {**paper, "summary": paper["abstract"][:200], "why": "placeholder reason"}
+            {**paper, "hook": paper["abstract"][:200], "answer": "placeholder reason"}
             for paper in json.load(file)[:limit]
         ]
     messages = build_messages(papers)

@@ -50,7 +50,7 @@ def make_chat() -> object:
 
     def chat(system: str, user: str) -> tuple[str, int]:
         chat.calls.append((system, user))
-        return '{"summary": "The fake summary.", "why": "Names the topic."}', 7
+        return '{"hook": "The fake hook.", "answer": "Names the topic."}', 7
 
     chat.calls = []
     return chat
@@ -63,8 +63,8 @@ def test_build_digest_summarizes_top_paper_and_counts_tokens():
     )
     assert len(messages) == 1
     assert papers[0]["title"] in messages[0]
-    assert "The fake summary." in messages[0]
-    assert tokens == 1 + 1 + 7  # one topic, one paper, one summary
+    assert "The fake hook." in messages[0]
+    assert tokens == 1 + 1 + 7  # one topic, one paper, one hook
 
 
 def test_build_digest_with_no_papers_says_quiet_day():

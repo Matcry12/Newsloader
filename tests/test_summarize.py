@@ -30,10 +30,10 @@ def make_chat(reply: str) -> object:
 
 def test_summarize_keeps_paper_keys_and_sets_summary_and_why():
     paper = make_paper()
-    chat = make_chat('{"summary": "It studies LMs.", "why": "Names rag_retrieval."}')
+    chat = make_chat('{"hook": "It studies LMs.", "answer": "Names rag_retrieval."}')
     result, tokens = summarize(paper, "sys", chat)
-    assert result["summary"] == "It studies LMs."
-    assert result["why"] == "Names rag_retrieval."
+    assert result["hook"] == "It studies LMs."
+    assert result["answer"] == "Names rag_retrieval."
     assert result["id"] == paper["id"]
     assert result["title"] == paper["title"]
     assert tokens == 7
@@ -43,25 +43,25 @@ def test_summarize_keeps_paper_keys_and_sets_summary_and_why():
 def test_summarize_falls_back_on_invalid_json():
     paper = make_paper()
     result, tokens = summarize(paper, "sys", make_chat("not json at all"))
-    assert result["summary"] == paper["abstract"][:200]
-    assert result["why"] == ""
+    assert result["hook"] == paper["abstract"][:200]
+    assert result["answer"] == ""
     assert tokens == 7
 
 
 def test_summarize_falls_back_when_why_is_missing():
     paper = make_paper()
-    reply = '{"summary": "It studies LMs."}'
+    reply = '{"hook": "It studies LMs."}'
     result, tokens = summarize(paper, "sys", make_chat(reply))
-    assert result["summary"] == paper["abstract"][:200]
-    assert result["why"] == ""
+    assert result["hook"] == paper["abstract"][:200]
+    assert result["answer"] == ""
     assert tokens == 7
 
 
 def test_summarize_falls_back_when_reply_is_a_list():
     paper = make_paper()
-    result, tokens = summarize(paper, "sys", make_chat('["summary", "why"]'))
-    assert result["summary"] == paper["abstract"][:200]
-    assert result["why"] == ""
+    result, tokens = summarize(paper, "sys", make_chat('["hook", "answer"]'))
+    assert result["hook"] == paper["abstract"][:200]
+    assert result["answer"] == ""
     assert tokens == 7
 
 

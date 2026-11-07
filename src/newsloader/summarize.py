@@ -42,33 +42,40 @@ def system_prompt(profile: dict) -> str:
     """Static instructions for the digest writer, listing this reader's interests."""
     topics = ", ".join(topic["name"] for topic in profile["topics"])
     return (
-        "You write a daily research digest for one reader whose interests are: "
-        f"{topics}. "
+        "You write a daily research digest for one busy reader who scans it on a "
+        f"phone. Their interests are: {topics}. "
         "Reply with JSON only, in exactly this shape: "
-        '{"summary": "at most 2 plain sentences on what the paper does and finds", '
-        '"why": "1 sentence on why it matters to this reader; '
-        'name the matching interest"}. '
-        "Use only facts stated in the abstract."
+        '{"hook": "one question, at most 12 words, that opens a curiosity gap about '
+        'a real problem this work tackles; the abstract must answer it", '
+        '"answer": "one sentence, at most 15 words, answering the question directly '
+        'with the key finding"}. '
+        "Style example only, do not reuse its facts: "
+        '{"hook": "Do AI tutors actually help people learn?", '
+        '"answer": "Agents beat a plain chatbot in two trials on law and coding."}. '
+        "Clarity over cleverness: everyday words, active voice, no jargon, and no "
+        "paper-speak like 'the paper' or 'we propose'. Describe an interest in plain "
+        "words, never by its underscore name. Prefer a concrete number when the "
+        "abstract has one. Use only facts stated in the abstract, with no hype."
     )
 
 
 def summarize(paper: dict, system: str, chat: Chat) -> tuple[dict, int]:
-    """Add summary and why to a paper; fall back to the abstract if the reply is bad."""
+    """Add hook and answer to a paper; fall back to the abstract if the reply is bad."""
     reply, tokens = chat(system, paper["title"] + "\n\n" + paper["abstract"])
     try:
         data = json.loads(reply)
     except json.JSONDecodeError:
         data = {}
-    summary = data.get("summary") if isinstance(data, dict) else None
-    why = data.get("why") if isinstance(data, dict) else None
+    hook = data.get("hook") if isinstance(data, dict) else None
+    answer = data.get("answer") if isinstance(data, dict) else None
     if not (
-        isinstance(summary, str)
-        and isinstance(why, str)
-        and summary.strip()
-        and why.strip()
+        isinstance(hook, str)
+        and isinstance(answer, str)
+        and hook.strip()
+        and answer.strip()
     ):
-        summary, why = paper["abstract"][:200], ""
-    return {**paper, "summary": summary, "why": why}, tokens
+        hook, answer = paper["abstract"][:200], ""
+    return {**paper, "hook": hook, "answer": answer}, tokens
 
 
 def main(
@@ -85,8 +92,8 @@ def main(
         result, used = summarize(paper, system, chat_deepseek)
         tokens += used
         print(result["title"][:80])
-        print(f"  summary: {result['summary']}")
-        print(f"  why: {result['why']}")
+        print(f"  hook: {result['hook']}")
+        print(f"  answer: {result['answer']}")
     print(f"tokens: {tokens}")
 
 

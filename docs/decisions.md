@@ -3,7 +3,7 @@
 Daily personalized tech digest → Telegram. Also a CV project: deployment, eval in CI, tracing, cost control.
 
 ## D1. Product
-Personalized digest: fetch → rank against interest profile → send top 5–7 (2-line summary, "why it matters", link).
+Personalized digest: fetch → rank against interest profile → send top 5–7 (question hook and one-line answer in easy words, link).
 v1 source: arXiv only. Sources pluggable (HN, GitHub trending, blogs later).
 
 ## D2. Ranking pipeline
@@ -14,7 +14,7 @@ v1 source: arXiv only. Sources pluggable (HN, GitHub trending, blogs later).
   (Covington et al. 2016, RecSys) and paper recommenders (Scholar Inbox, arXiv:2504.08385; arxiv-sanity-lite). Recall cost measured by D10.
 - **Embed once, score per user:** each paper is embedded once and shared; per-user scoring is a cheap cosine.
 - **Stage 1 (embeddings):** embed title+abstract, cache by ID. Score = max cosine over interest vectors, minus 👎 penalty. Keep the top 5.
-- **Summaries:** DeepSeek writes a summary and "why it matters" for the top 5 only, output capped.
+- **Summaries:** DeepSeek writes a question hook and a one-line answer for the top 5 only, output capped.
 - **No rerank in the baseline.** A rerank model only returns scores, so an LLM is needed for the text anyway. Add one (Vertex `semantic-ranker` or DeepSeek) only if the eval shows it clearly beats no rerank.
 - Measure during development: precision@5 on labeled 👍/👎.
 

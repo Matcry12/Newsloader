@@ -19,8 +19,8 @@ def make_paper(**overrides) -> dict:
     """Return a valid summarized paper."""
     paper = {
         "title": "A <b>bold</b> study",
-        "summary": "Cats & dogs < 3.",
-        "why": "It matches your interest.",
+        "hook": "Cats & dogs < 3.",
+        "answer": "It matches your interest.",
         "url": "https://arxiv.org/abs/2601.00001v1",
     }
     paper.update(overrides)
@@ -47,7 +47,7 @@ def test_format_paper_escapes_title_and_summary():
 
 
 def test_format_paper_omits_why_line_when_empty():
-    text = format_paper(2, make_paper(why=""))
+    text = format_paper(2, make_paper(answer=""))
     assert "💡" not in text
     assert len(text.splitlines()) == 2
 
@@ -58,8 +58,7 @@ def test_build_messages_without_papers_is_a_quiet_day():
 
 def test_build_messages_splits_under_limit_and_loses_no_paper():
     papers = [
-        make_paper(title=f"Paper number {index}", summary="x" * 1500)
-        for index in range(5)
+        make_paper(title=f"Paper number {index}", hook="x" * 1500) for index in range(5)
     ]
     messages = build_messages(papers)
     assert len(messages) > 1

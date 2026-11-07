@@ -6,7 +6,7 @@ flowchart LR
     A[arXiv API<br/>union of users' categories] --> S0
     S0[Stage 0 · $0<br/>dedupe · v1 only] -->|all new| S1
     S1[Stage 1 · Gemini<br/>embed once · per user:<br/>max-cosine vs profile − 👎] -->|top 5| S3
-    S3[Summaries · DeepSeek<br/>2-line summary +<br/>why it matters] --> T[Telegram<br/>digest + 💰 footer]
+    S3[Summaries · DeepSeek<br/>question hook +<br/>one-line answer] --> T[Telegram<br/>digest + 💰 footer]
     T -->|👍/👎| FB[(feedback)]
     FB -.-> S1
     I[user profiles<br/>config/users/*.yaml] -.-> S1
